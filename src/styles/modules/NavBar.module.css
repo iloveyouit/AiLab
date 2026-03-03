@@ -14,7 +14,17 @@
   padding: var(--safe-top, 0px) calc(24px + var(--safe-right, 0px)) 0 calc(24px + var(--safe-left, 0px));
   z-index: 10;
   position: relative;
-  gap: 0;
+  position: relative;
+}
+
+.navContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  gap: 32px;
 }
 
 .navBtn {
@@ -27,7 +37,9 @@
 .navBtn:hover { color: var(--text-secondary); }
 .navBtn.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
 
-.spacer { flex: 1; }
+
+
+.navLinks { display: flex; flex-direction: row; }
 
 .navLinks { display: flex; flex-direction: row; }
 
@@ -84,7 +96,14 @@
 /* #61 — NavBar nav links: horizontal scroll on mobile instead of overflow-hidden */
 @media (max-width: 640px) {
   .nav {
+    padding: 0;
+  }
+  .navContainer {
+    gap: 8px;
+    justify-content: flex-start;
     padding: 0 8px;
+    width: 100%;
+    max-width: 100vw;
   }
   .navLinks {
     display: flex;

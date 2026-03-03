@@ -25,7 +25,8 @@ export default function NavBar() {
 
   return (
     <nav className={styles.nav}>
-      <div className={styles.actions}>
+      <div style={{ display: 'flex', width: '100%', maxWidth: '900px', margin: '0 auto', justifyContent: 'center', gap: '32px' }}>
+        <div className={styles.actions}>
         <div className={styles.actionsItems}>
           {/* New session (full form) */}
           <button
@@ -57,7 +58,6 @@ export default function NavBar() {
         </button>
       </div>
 
-      <div className={styles.spacer} />
 
       <div className={styles.navLinks}>
         {NAV_ITEMS.map((item) => (
@@ -72,6 +72,7 @@ export default function NavBar() {
             {item.label}
           </NavLink>
         ))}
+        </div>
       </div>
     </nav>
   );
