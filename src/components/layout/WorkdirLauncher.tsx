@@ -2,6 +2,9 @@
  * WorkdirLauncher - Dropdown popover in the NavBar that lists recent working
  * directories. Clicking a directory instantly launches a terminal session
  * in that directory using saved connection config from localStorage.
+ *
+ * The dropdown uses position:fixed and measures the trigger button rect so
+ * it never clips outside the viewport regardless of where the button sits.
  */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useClickOutside } from '@/hooks/useClickOutside';
@@ -50,19 +53,42 @@ function shortenPath(fullPath: string): string {
   return segments[segments.length - 1] || normalized;
 }
 
+/** Viewport-safe dropdown width in pixels */
+const DROPDOWN_WIDTH = 360;
+const DROPDOWN_GAP = 6;
+const VIEWPORT_PADDING = 16;
+
 export default function WorkdirLauncher() {
   const [open, setOpen] = useState(false);
   const [dirs, setDirs] = useState<string[]>([]);
+  const [dropdownPos, setDropdownPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const knownProjects = useKnownProjects();
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   const close = useCallback(() => setOpen(false), []);
 
   useClickOutside(wrapperRef, close, open);
 
+  // Calculate dropdown position whenever it opens
+  const updatePosition = useCallback(() => {
+    if (!btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    const top = rect.bottom + DROPDOWN_GAP;
+
+    // Try to align left edge with button; clamp so it doesn't overflow right
+    let left = rect.left;
+    const maxLeft = window.innerWidth - DROPDOWN_WIDTH - VIEWPORT_PADDING;
+    if (left > maxLeft) left = maxLeft;
+    if (left < VIEWPORT_PADDING) left = VIEWPORT_PADDING;
+
+    setDropdownPos({ top, left });
+  }, []);
+
   // Reload history merged with known projects each time the dropdown opens
   useEffect(() => {
     if (open) {
+      updatePosition();
       const history = loadWorkdirHistory();
       const seen = new Set(history);
       const merged = [...history];
@@ -74,7 +100,7 @@ export default function WorkdirLauncher() {
       }
       setDirs(merged);
     }
-  }, [open, knownProjects]);
+  }, [open, knownProjects, updatePosition]);
 
   // Escape key closes dropdown
   useEffect(() => {
@@ -88,6 +114,18 @@ export default function WorkdirLauncher() {
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [open, close]);
+
+  // Re-position on scroll/resize so it stays anchored
+  useEffect(() => {
+    if (!open) return;
+    const reposition = () => updatePosition();
+    window.addEventListener('resize', reposition);
+    window.addEventListener('scroll', reposition, true);
+    return () => {
+      window.removeEventListener('resize', reposition);
+      window.removeEventListener('scroll', reposition, true);
+    };
+  }, [open, updatePosition]);
 
   async function handleLaunch(workingDir: string) {
     close();
@@ -133,6 +171,7 @@ export default function WorkdirLauncher() {
   return (
     <div className={styles.wrapper} ref={wrapperRef}>
       <button
+        ref={btnRef}
         className={`${styles.triggerBtn} ${open ? styles.open : ''}`}
         onClick={() => setOpen((prev) => !prev)}
         title="Recent working directories"
@@ -141,7 +180,15 @@ export default function WorkdirLauncher() {
       </button>
 
       {open && (
-        <div className={styles.dropdown}>
+        <div
+          className={styles.dropdown}
+          style={{
+            position: 'fixed',
+            top: dropdownPos.top,
+            left: dropdownPos.left,
+            width: DROPDOWN_WIDTH,
+          }}
+        >
           <div className={styles.dropdownHeader}>Recent Directories</div>
           {dirs.length === 0 ? (
             <div className={styles.empty}>

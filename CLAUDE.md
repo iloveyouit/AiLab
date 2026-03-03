@@ -6,14 +6,14 @@ A localhost dashboard (port 3333) that monitors all active AI coding agent sessi
 
 ## Tech Stack
 
-| Component | Technology |
-|-----------|-----------|
-| Backend | Node.js 18+ (ESM) + Express 5 + ws 8 + tsx |
-| Frontend | React 19 + Three.js + @react-three/fiber + Zustand + Vite |
-| Terminal | node-pty for SSH/local PTY sessions |
-| Hooks | Bash script (file-based MQ primary, HTTP fallback) |
-| Persistence | SQLite (server) + IndexedDB via Dexie (browser) |
-| Port | 3333 (configurable) |
+| Component   | Technology                                                   |
+| ----------- | ------------------------------------------------------------ |
+| Backend     | Node.js 18+ (ESM) + Express 5 + ws 8 + tsx                   |
+| Frontend    | React 19 + Three.js + @react-three/fiber + Zustand + Vite    |
+| Terminal    | node-pty for SSH/local PTY sessions                          |
+| Hooks       | Bash script (file-based MQ primary, HTTP fallback)           |
+| Persistence | SQLite (server) + IndexedDB via Dexie (browser)              |
+| Port        | 3333 (Express backend, configurable), 3332 (Vite dev server) |
 
 ## Commands
 
@@ -107,13 +107,13 @@ Claude Code / Gemini / Codex
 
 ### Latency Expectations
 
-| Stage | Typical | Notes |
-|-------|---------|-------|
-| jq enrichment | 2-5ms | Single jq invocation in bash |
-| File append | ~0.1ms | POSIX atomic for writes < 4096 bytes |
-| fs.watch + debounce | 0-10ms | Instant on macOS/Linux |
-| Server processing | ~0.5ms | handleEvent + broadcast |
-| **Total end-to-end** | **3-17ms** | Hook fired to browser updated |
+| Stage                | Typical    | Notes                                |
+| -------------------- | ---------- | ------------------------------------ |
+| jq enrichment        | 2-5ms      | Single jq invocation in bash         |
+| File append          | ~0.1ms     | POSIX atomic for writes < 4096 bytes |
+| fs.watch + debounce  | 0-10ms     | Instant on macOS/Linux               |
+| Server processing    | ~0.5ms     | handleEvent + broadcast              |
+| **Total end-to-end** | **3-17ms** | Hook fired to browser updated        |
 
 ### Module Relationships
 
@@ -247,6 +247,7 @@ data/
 - **Dual persistence**: SQLite on server (sessions, snapshots) + IndexedDB via Dexie in browser (history, settings, queue).
 - **Coordinator pattern**: sessionStore.js delegates to focused sub-modules rather than being a monolith.
 - **Atomic settings writes**: Hook installation uses write-to-temp + rename to prevent corrupting `~/.claude/settings.json`.
+- **Fixed-position dropdown (WorkdirLauncher)**: Dropdown uses `position: fixed` with JS-computed coordinates from `getBoundingClientRect()`. This avoids viewport clipping that occurs with `position: absolute` when the trigger button is near a screen edge. The dropdown re-positions on scroll and resize to stay anchored to the button.
 
 ## Session State Machine
 
@@ -267,13 +268,13 @@ SessionEnd      -> ended     (Death, removed after 10s for hooks / kept for SSH)
 
 When a hook event arrives with an unknown `session_id`, the matcher uses a 5-priority fallback system to link it to an existing terminal session:
 
-| Priority | Strategy | When Used | Risk |
-|----------|----------|-----------|------|
-| 0 | pendingResume + terminal ID / workDir | Session resume after disconnect | Low — explicit user action |
-| 1 | `agent_terminal_id` env var | SSH terminal injects `AGENT_MANAGER_TERMINAL_ID` | Low — direct match |
-| 2 | `tryLinkByWorkDir` | Claude starts in same directory as terminal's workingDir | Medium — two sessions in same dir |
-| 3 | Path scan (connecting sessions) | Scan all `connecting` status sessions by normalized path | Medium — ambiguous if multiple |
-| 4 | PID parent check | Check if Claude's PID is a child of a known PTY process | High — unreliable across shells |
+| Priority | Strategy                              | When Used                                                | Risk                              |
+| -------- | ------------------------------------- | -------------------------------------------------------- | --------------------------------- |
+| 0        | pendingResume + terminal ID / workDir | Session resume after disconnect                          | Low — explicit user action        |
+| 1        | `agent_terminal_id` env var           | SSH terminal injects `AGENT_MANAGER_TERMINAL_ID`         | Low — direct match                |
+| 2        | `tryLinkByWorkDir`                    | Claude starts in same directory as terminal's workingDir | Medium — two sessions in same dir |
+| 3        | Path scan (connecting sessions)       | Scan all `connecting` status sessions by normalized path | Medium — ambiguous if multiple    |
+| 4        | PID parent check                      | Check if Claude's PID is a child of a known PTY process  | High — unreliable across shells   |
 
 If no match is found, a display-only card is created with the detected source (VS Code, iTerm, Warp, etc.).
 
@@ -283,12 +284,12 @@ When `PreToolUse` fires, an approval timer starts. If `PostToolUse` doesn't arri
 
 ### Tool Category Timeouts
 
-| Category | Tools | Timeout | Waiting Status |
-|----------|-------|---------|----------------|
-| fast | Read, Write, Edit, Grep, Glob, NotebookEdit | 3s | approval |
-| userInput | AskUserQuestion, EnterPlanMode, ExitPlanMode | 3s | input |
-| medium | WebFetch, WebSearch | 15s | approval |
-| slow | Bash, Task | 8s | approval |
+| Category  | Tools                                        | Timeout | Waiting Status |
+| --------- | -------------------------------------------- | ------- | -------------- |
+| fast      | Read, Write, Edit, Grep, Glob, NotebookEdit  | 3s      | approval       |
+| userInput | AskUserQuestion, EnterPlanMode, ExitPlanMode | 3s      | input          |
+| medium    | WebFetch, WebSearch                          | 15s     | approval       |
+| slow      | Bash, Task                                   | 8s      | approval       |
 
 ### Refinements
 
@@ -318,6 +319,7 @@ Server mqReader.js
 ### Fallback: HTTP POST
 
 When the MQ directory doesn't exist (server not started), hooks fall back to:
+
 ```
 curl -s --connect-timeout 1 -m 3 -X POST \
   -H "Content-Type: application/json" \
@@ -337,6 +339,7 @@ curl -s --connect-timeout 1 -m 3 -X POST \
 ## Interaction: Click-to-Select Session
 
 When user clicks a session card:
+
 1. Character plays acknowledgment animation
 2. Detail panel slides in from the right (resizable)
 3. Panel shows: project name, prompt history (scrollable), activity log, tool calls, response excerpts, terminal, notes, queue, summary
@@ -346,16 +349,16 @@ When user clicks a session card:
 
 ## Keyboard Shortcuts
 
-| Key | Action |
-|-----|--------|
-| `/` | Focus search |
+| Key      | Action                         |
+| -------- | ------------------------------ |
+| `/`      | Focus search                   |
 | `Escape` | Close modal / deselect session |
-| `?` | Toggle shortcuts panel |
-| `S` | Toggle settings |
-| `K` | Kill selected session |
-| `A` | Archive selected session |
-| `T` | New terminal session |
-| `M` | Mute/unmute all |
+| `?`      | Toggle shortcuts panel         |
+| `S`      | Toggle settings                |
+| `K`      | Kill selected session          |
+| `A`      | Archive selected session       |
+| `T`      | New terminal session           |
+| `M`      | Mute/unmute all                |
 
 ## Styles
 
@@ -369,25 +372,26 @@ When user clicks a session card:
 
 The dashboard supports monitoring three AI coding CLIs:
 
-| CLI | Hook Script | Config Location | Events |
-|-----|------------|-----------------|--------|
-| Claude Code | dashboard-hook.sh | ~/.claude/settings.json | SessionStart, PreToolUse, etc. |
-| Gemini CLI | dashboard-hook-gemini.sh | ~/.gemini/settings.json | BeforeAgent, AfterAgent, etc. |
-| Codex | dashboard-hook-codex.sh | ~/.codex/config.toml | agent-turn-complete |
+| CLI         | Hook Script              | Config Location         | Events                         |
+| ----------- | ------------------------ | ----------------------- | ------------------------------ |
+| Claude Code | dashboard-hook.sh        | ~/.claude/settings.json | SessionStart, PreToolUse, etc. |
+| Gemini CLI  | dashboard-hook-gemini.sh | ~/.gemini/settings.json | BeforeAgent, AfterAgent, etc.  |
+| Codex       | dashboard-hook-codex.sh  | ~/.codex/config.toml    | agent-turn-complete            |
 
 ## Hook Density Levels
 
-| Level | Events | Use Case |
-|-------|--------|----------|
-| high | All 14 Claude events | Full monitoring, approval detection |
-| medium | 12 events (no TeammateIdle, PreCompact) | Default, good balance |
-| low | 5 events (Start, Prompt, Permission, Stop, End) | Minimal overhead |
+| Level  | Events                                          | Use Case                            |
+| ------ | ----------------------------------------------- | ----------------------------------- |
+| high   | All 14 Claude events                            | Full monitoring, approval detection |
+| medium | 12 events (no TeammateIdle, PreCompact)         | Default, good balance               |
+| low    | 5 events (Start, Prompt, Permission, Stop, End) | Minimal overhead                    |
 
 ## Troubleshooting
 
 ### Port 3333 in Use
 
 The server automatically kills the process occupying port 3333 on startup. To use a different port:
+
 ```bash
 # Via CLI flag
 npm start -- --port 4444
@@ -410,6 +414,7 @@ echo '{"port": 4444}' > data/server-config.json
 ### jq Not Installed
 
 The hook script requires `jq` for JSON enrichment. Without it, hooks still work but send unenriched JSON (no PID, TTY, or terminal detection).
+
 ```bash
 # macOS
 brew install jq

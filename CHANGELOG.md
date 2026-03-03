@@ -8,8 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Fixed
 
-- DIRS (WorkdirLauncher) dropdown menu overflowing screen on mobile/smaller windows
-- NavBar horizontal scrolling clipping dropdown menus
+- **DIRS dropdown completely remade** — WorkdirLauncher dropdown now uses `position: fixed` with JavaScript-computed positioning via `getBoundingClientRect()`, eliminating all viewport clipping issues regardless of button location or screen size
+- NavBar cleaned up — removed duplicate CSS rules, unused `.navContainer` class, and redundant `position: relative` declarations
+- Production build now stays in sync with dev server changes (rebuilt `dist/client/`)
 
 ## [2.2.0] - 2026-02-26
 

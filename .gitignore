@@ -37,4 +37,6 @@ release/
 *.sqlite
 *.db
 *.db-journal
+*.db-shm
+*.db-wal
 test.db

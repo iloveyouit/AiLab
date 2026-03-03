@@ -1,6 +1,8 @@
 /* ============================================================
    WorkdirLauncher CSS Module
-   Dropdown popover for one-click session launch by directory
+   Dropdown popover for one-click session launch by directory.
+   The dropdown uses position:fixed (set via inline styles in the
+   component) so these styles only handle appearance, not positioning.
    ============================================================ */
 
 .wrapper {
@@ -35,18 +37,14 @@
 /* ---- Dropdown ---- */
 
 .dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  min-width: 280px;
-  max-width: 380px;
+  /* position:fixed + top/left/width are set via inline styles */
   max-height: 320px;
   overflow-y: auto;
   background: var(--bg-panel, #0d0d2b);
   border: 1px solid var(--border-accent, #1a1a3e);
   border-radius: 8px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  z-index: 100;
+  z-index: 1000;
   animation: dropIn 0.15s ease;
 }
 
@@ -167,12 +165,10 @@
 
 /* ---- Responsive (Mobile) ---- */
 
-/* #68 — Constrain dropdown width on small phones */
+/* #68 — On very small screens cap the dropdown width via inline style */
 @media (max-width: 480px) {
   .dropdown {
     max-width: calc(100vw - 32px);
-    min-width: unset;
-    left: 0;
   }
 }
 
