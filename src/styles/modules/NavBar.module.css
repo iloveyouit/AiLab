@@ -29,6 +29,8 @@
 
 .spacer { flex: 1; }
 
+.navLinks { display: flex; flex-direction: row; }
+
 /* ---- Nav Actions ---- */
 
 .actions { display: flex; align-items: center; gap: 8px; }
@@ -83,12 +85,15 @@
 @media (max-width: 640px) {
   .nav {
     padding: 0 8px;
+  }
+  .navLinks {
+    display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
-  .nav::-webkit-scrollbar { display: none; }
+  .navLinks::-webkit-scrollbar { display: none; }
 
   .navBtn {
     padding: 10px 12px;

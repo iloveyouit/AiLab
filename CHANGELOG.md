@@ -4,9 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- DIRS (WorkdirLauncher) dropdown menu overflowing screen on mobile/smaller windows
+- NavBar horizontal scrolling clipping dropdown menus
+
 ## [2.2.0] - 2026-02-26
 
 ### Added
+
 - Split-view tabs in session detail panel
 - 3D scene toggle (enable/disable for performance)
 - `--uninstall` CLI flag to remove all hooks cleanly
@@ -18,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Contributing guide and changelog
 
 ### Fixed
+
 - Queue duplication when sending prompts
 - Terminal lookup in queue send
 - Detail panel closing when session is re-keyed
@@ -25,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Setup wizard input validation and CSP for Three.js
 
 ### Changed
+
 - Migrated from deprecated `xterm` to `@xterm/xterm`
 - Swapped navbar layout for better usability
 - Hardened security for public exposure (P0)
@@ -33,6 +43,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [2.0.4] - 2026-02-18
 
 ### Added
+
 - 3D Cyberdrome scene with Three.js robots, pathfinding, and themed environments
 - 9 scene themes (Command Center, Cyberpunk, Dracula, Nord, Monokai, Solarized, Light, Warm, Blonde)
 - Session resume from history view
@@ -47,6 +58,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Demo video and favicon
 
 ### Fixed
+
 - 3D scene Error #185 (WebGL context)
 - Shell detection and shell-ready detection
 - Session deduplication and linkage bugs
@@ -54,6 +66,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Session matcher edge cases
 
 ### Changed
+
 - Migrated to React 19 + TypeScript + Vite with full test suite (400+ tests)
 - Comprehensive architecture review and security hardening (v2.0.0)
 - Simplified 3D scene by removing wall sconces and room session listing
@@ -62,6 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [1.0.1] - 2026-02-12
 
 ### Added
+
 - npm publishing as `ai-agent-session-center` with CLI support (`npx` / global install)
 - Multi-CLI support: Claude Code, Gemini CLI, and Codex
 - Browser SSH terminal with node-pty and xterm.js
@@ -80,6 +94,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Analytics with usage heatmaps and tool breakdowns
 
 ### Fixed
+
 - Approval detection timing
 - Payload size limits
 - Session title generation
@@ -88,6 +103,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 ## [1.0.0] - 2026-02-10
 
 ### Added
+
 - Initial release: real-time dashboard for monitoring Claude Code sessions
 - WebSocket-based live updates
 - Session state machine (idle, prompting, working, waiting, approval, input, ended)

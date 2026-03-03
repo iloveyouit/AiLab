@@ -1,7 +1,7 @@
-import { NavLink } from 'react-router';
-import { useUiStore } from '@/stores/uiStore';
-import WorkdirLauncher from './WorkdirLauncher';
-import styles from '@/styles/modules/NavBar.module.css';
+import { NavLink } from "react-router";
+import { useUiStore } from "@/stores/uiStore";
+import WorkdirLauncher from "./WorkdirLauncher";
+import styles from "@/styles/modules/NavBar.module.css";
 
 interface NavItem {
   to: string;
@@ -9,11 +9,11 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'LIVE' },
-  { to: '/history', label: 'HISTORY' },
-  { to: '/timeline', label: 'TIMELINE' },
-  { to: '/analytics', label: 'ANALYTICS' },
-  { to: '/queue', label: 'QUEUE' },
+  { to: "/", label: "LIVE" },
+  { to: "/history", label: "HISTORY" },
+  { to: "/timeline", label: "TIMELINE" },
+  { to: "/analytics", label: "ANALYTICS" },
+  { to: "/queue", label: "QUEUE" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -30,7 +30,7 @@ export default function NavBar() {
           {/* New session (full form) */}
           <button
             className={`${styles.qaBtn} ${styles.terminal}`}
-            onClick={() => openModal('new-session')}
+            onClick={() => openModal("new-session")}
           >
             + NEW
           </button>
@@ -38,7 +38,7 @@ export default function NavBar() {
           {/* Quick launch (label picker) */}
           <button
             className={`${styles.qaBtn} ${styles.quick}`}
-            onClick={() => openModal('quick-session')}
+            onClick={() => openModal("quick-session")}
           >
             QUICK
           </button>
@@ -50,7 +50,7 @@ export default function NavBar() {
         {/* Shortcuts help button */}
         <button
           className={styles.shortcutsBtn}
-          onClick={() => openModal('shortcuts')}
+          onClick={() => openModal("shortcuts")}
           title="Keyboard shortcuts (?)"
         >
           ?
@@ -59,18 +59,20 @@ export default function NavBar() {
 
       <div className={styles.spacer} />
 
-      {NAV_ITEMS.map((item) => (
-        <NavLink
-          key={item.to}
-          to={item.to}
-          end={item.to === '/'}
-          className={({ isActive }) =>
-            `${styles.navBtn} ${isActive ? styles.active : ''}`
-          }
-        >
-          {item.label}
-        </NavLink>
-      ))}
+      <div className={styles.navLinks}>
+        {NAV_ITEMS.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.to === "/"}
+            className={({ isActive }) =>
+              `${styles.navBtn} ${isActive ? styles.active : ""}`
+            }
+          >
+            {item.label}
+          </NavLink>
+        ))}
+      </div>
     </nav>
   );
 }
